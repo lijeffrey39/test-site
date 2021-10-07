@@ -1,3 +1,4 @@
+const fs = require('fs');
 // We require the Hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
 //
@@ -13,22 +14,19 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  // We get the contract to deploy
-  // const Greeter = await hre.ethers.getContractFactory("Greeter");
-  // const greeter = await Greeter.deploy("Hello, Hardhat!");
-
   const treasuryAddress = '0x70997970c51812dc3a010c7d01b50e0d17dc79c8'; // depends on local address values
-  const ownerAddress = '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'; // depends on local address values
 
+  // We get the contract to deploy
   const MoodyMartian = await hre.ethers.getContractFactory("MoodyMartian");
   const martian = await MoodyMartian.deploy(treasuryAddress);
 
+  const data = {
+    address: martian.address,
+    abi: JSON.parse(martian.interface.format('json'))
+  };
+  fs.writeFileSync(__dirname + '/../../src/MoodyMartian.json', JSON.stringify(data));
+
   console.log("Martian deployed to:", martian.address);
-
-  await martian.buyMartian({ value: ethers.utils.parseEther("0.5") });
-
-  const martiansForOwner = await martian.listMartiansForOwner(ownerAddress);
-  console.log(martiansForOwner);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
